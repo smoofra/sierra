@@ -44,11 +44,16 @@ def main():
   init_sierra(serial)
   for rec in scan_for_records(serial):
     clear()
-    tcode(rec)
+    decode_record(rec)
     sys.stdout.flush()
 
+def onoff(value):
+  if value:
+    return "ON "
+  else:
+    return "off"
 
-def tcode(record):
+def decode_record(record):
   if record[0] != '[':
     return
 
@@ -62,33 +67,18 @@ def tcode(record):
   #split_group = "00"
   #interfaced = "00"
 
-  Brackets = ("COR","PL","QuRX","DTMF","PTT")
-
+  names = ("COR","PL","QuRX","DTMF","PTT")
   telemlist = [int(x, 16) for x in record[1:-1].split()]
 
-  telemread = [(0,""),(0,""),(0,""),(0,""),(0,"")]
-
-  for x  in range(5):
-#  print (telemlist[x])
-    telemread[x] = telemlist[x], Brackets [x]
-
-
-  for y in range(8):
-    print ("Port " + str(y)+ "   ", end ='')
-
-    for x in range(5):
-      z= telemread[x]
-      e = 1 << y
-#    print z[0], e
-      if z[0] & e >= 1:
-        ron= z[1]+ " on   "
-        print  (ron, end ='')
-      else:
-        ron= z[1]+ " off  "
-        print ( ron, end = '')
-
-    print (" ")
-
+  for portnum in range(8):
+    print ("Port " + str(portnum)+ "   ", end ='')
+    for telem_value, name in zip(telemlist, names):
+      mask = 1 << portnum
+      print  (name, onoff(telem_value & mask), end =' ')
+    print()
 
 if __name__ == '__main__':
-  main()
+  try:
+    main()
+  except KeyboardInterrupt:
+    pass
