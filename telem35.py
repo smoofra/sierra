@@ -1,3 +1,8 @@
+#!/usr/bin/python3 -tt
+
+# History
+#  Sierra Telemetry decoder by N7CK, September 2020
+#  Modified to directly use serial port isntead of telnet by LED, Dec 2021
 
 import sys
 import argparse
